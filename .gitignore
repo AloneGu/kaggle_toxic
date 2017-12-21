@@ -1,4 +1,5 @@
 features/
+notebooks/.ipynb_checkpoints/
 results/
 input/
 notebooks/*.h5
