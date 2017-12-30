@@ -1,4 +1,5 @@
 features/
+*.vec
 notebooks/.ipynb_checkpoints/
 results/
 input/
