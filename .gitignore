@@ -1,4 +1,5 @@
 features/
+glove.840B.300d.zip
 *.vec
 notebooks/.ipynb_checkpoints/
 results/
