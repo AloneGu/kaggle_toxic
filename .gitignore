@@ -1,4 +1,5 @@
 features/
+*/.ipynb_checkpoints/
 glove*
 glove.840B.300d.zip
 *.vec
