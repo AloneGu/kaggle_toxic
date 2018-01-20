@@ -1,4 +1,6 @@
 features/
+features_old/
+results_old/
 */.ipynb_checkpoints/
 glove*
 glove.840B.300d.zip
