@@ -1,4 +1,6 @@
 features/
+notebooks/__pycache__/
+
 features_old/
 results_old/
 */.ipynb_checkpoints/
