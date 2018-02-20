@@ -2,7 +2,7 @@ from keras.models import Model, load_model
 from keras.layers import Dense, Embedding, Input
 from keras.layers import LSTM, Bidirectional, GlobalMaxPool1D, Dropout,GlobalAveragePooling1D,Conv1D,Conv2D,Reshape
 from keras.preprocessing import text, sequence
-from keras.layers import MaxPool2D,concatenate,Flatten,CuDNNGRU,GRU
+from keras.layers import MaxPool2D,concatenate,Flatten,CuDNNGRU,GRU,MaxPooling1D
 
 def cnn2d(maxlen,nb_words,embed_dim,embedding_matrix,trainable_flag,comp=True):
     # https://github.com/bhaveshoswal/CNN-text-classification-keras/blob/master/model.py
