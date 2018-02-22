@@ -7,7 +7,10 @@ from keras.layers import MaxPool2D,concatenate,Flatten,CuDNNGRU,GRU,MaxPooling1D
 def cnn2d(maxlen,nb_words,embed_dim,embedding_matrix,trainable_flag,comp=True):
     # https://github.com/bhaveshoswal/CNN-text-classification-keras/blob/master/model.py
     inp = Input(shape=(maxlen, ))
-    x = Embedding(nb_words, embed_dim, weights=[embedding_matrix],trainable=trainable_flag)(inp)
+    if embedding_matrix is None:
+        x = Embedding(nb_words, embed_dim)(inp)
+    else:
+        x = Embedding(nb_words, embed_dim, weights=[embedding_matrix],trainable=trainable_flag)(inp)
     x = Reshape((maxlen,embed_dim,1))(x)
     x = Dropout(0.2)(x)
    
@@ -36,7 +39,10 @@ def cnn2d(maxlen,nb_words,embed_dim,embedding_matrix,trainable_flag,comp=True):
 
 def cnn_v1(maxlen,nb_words,embed_dim,embedding_matrix,trainable_flag,comp=True):
     inp = Input(shape=(maxlen, ))
-    x = Embedding(nb_words, embed_dim, weights=[embedding_matrix],trainable=trainable_flag)(inp)
+    if embedding_matrix is None:
+        x = Embedding(nb_words, embed_dim)(inp)
+    else:
+        x = Embedding(nb_words, embed_dim, weights=[embedding_matrix],trainable=trainable_flag)(inp)
     x = Dropout(0.2)(x)
     x = Conv1D(256,
              3,
@@ -58,7 +64,10 @@ def cnn_v1(maxlen,nb_words,embed_dim,embedding_matrix,trainable_flag,comp=True):
 
 def cnn_v2(maxlen,nb_words,embed_dim,embedding_matrix,trainable_flag,comp=True):
     inp = Input(shape=(maxlen, ))
-    x = Embedding(nb_words, embed_dim, weights=[embedding_matrix],trainable=trainable_flag)(inp)
+    if embedding_matrix is None:
+        x = Embedding(nb_words, embed_dim)(inp)
+    else:
+        x = Embedding(nb_words, embed_dim, weights=[embedding_matrix],trainable=trainable_flag)(inp)
     x = Conv1D(384,
              5,
              padding='valid',
@@ -79,7 +88,10 @@ def cnn_v2(maxlen,nb_words,embed_dim,embedding_matrix,trainable_flag,comp=True):
 
 def cnn_gru(maxlen,nb_words,embed_dim,embedding_matrix,trainable_flag,comp=True):
     inp = Input(shape=(maxlen, ))
-    x = Embedding(nb_words, embed_dim, weights=[embedding_matrix],trainable=trainable_flag)(inp)
+    if embedding_matrix is None:
+        x = Embedding(nb_words, embed_dim)(inp)
+    else:
+        x = Embedding(nb_words, embed_dim, weights=[embedding_matrix],trainable=trainable_flag)(inp)
     x = Dropout(0.2)(x)
     main = Conv1D(filters=256, kernel_size=3, padding='same', activation='relu')(x)
     main = MaxPooling1D(pool_size=2)(main)
@@ -96,7 +108,10 @@ def cnn_gru(maxlen,nb_words,embed_dim,embedding_matrix,trainable_flag,comp=True)
 
 def cudnn_gru(maxlen,nb_words,embed_dim,embedding_matrix,trainable_flag,comp=True):
     inp = Input(shape=(maxlen, ))
-    x = Embedding(nb_words, embed_dim, weights=[embedding_matrix],trainable=trainable_flag)(inp)
+    if embedding_matrix is None:
+        x = Embedding(nb_words, embed_dim)(inp)
+    else:
+        x = Embedding(nb_words, embed_dim, weights=[embedding_matrix],trainable=trainable_flag)(inp)
     x = Bidirectional(CuDNNGRU(128, return_sequences=True))(x)
     x = Dropout(0.1)(x)
     x = Bidirectional(CuDNNGRU(128, return_sequences=False))(x)
@@ -112,7 +127,10 @@ def cudnn_gru(maxlen,nb_words,embed_dim,embedding_matrix,trainable_flag,comp=Tru
 
 def lstm_v1(maxlen,nb_words,embed_dim,embedding_matrix,trainable_flag,comp=True):
     inp = Input(shape=(maxlen, ))
-    x = Embedding(nb_words, embed_dim, weights=[embedding_matrix],trainable=trainable_flag)(inp)
+    if embedding_matrix is None:
+        x = Embedding(nb_words, embed_dim)(inp)
+    else:
+        x = Embedding(nb_words, embed_dim, weights=[embedding_matrix],trainable=trainable_flag)(inp)
     x = Dropout(0.2)(x)
     x = Bidirectional(LSTM(64, return_sequences=True, dropout=0.2, recurrent_dropout=0.2))(x)
     x = GlobalMaxPool1D()(x)
@@ -129,7 +147,10 @@ def lstm_v1(maxlen,nb_words,embed_dim,embedding_matrix,trainable_flag,comp=True)
 
 def gru_v1(maxlen,nb_words,embed_dim,embedding_matrix,trainable_flag,comp=True):
     inp = Input(shape=(maxlen, ))
-    x = Embedding(nb_words, embed_dim, weights=[embedding_matrix],trainable=trainable_flag)(inp)
+    if embedding_matrix is None:
+        x = Embedding(nb_words, embed_dim)(inp)
+    else:
+        x = Embedding(nb_words, embed_dim, weights=[embedding_matrix],trainable=trainable_flag)(inp)
     x = Dropout(0.2)(x)
     x = Bidirectional(GRU(64, return_sequences=True, dropout=0.2, recurrent_dropout=0.2))(x)
     x = GlobalMaxPool1D()(x)
