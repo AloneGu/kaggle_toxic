@@ -1,4 +1,5 @@
 features/
+*.vec.zip
 notebooks/__pycache__/
 
 features_old/
