@@ -2,7 +2,7 @@ from keras.models import Model, load_model
 from keras.layers import Dense, Embedding, Input
 from keras.layers import LSTM, Bidirectional, GlobalMaxPool1D, Dropout,GlobalAveragePooling1D,Conv1D,Conv2D,Reshape
 from keras.preprocessing import text, sequence
-from keras.layers import MaxPool2D,concatenate,Flatten,CuDNNGRU,GRU,MaxPooling1D
+from keras.layers import MaxPool2D,concatenate,Flatten,CuDNNGRU,GRU,MaxPooling1D,CuDNNLSTM
 from keras import backend as K
 from keras.engine.topology import Layer
 from keras import initializers, regularizers, constraints
@@ -35,7 +35,7 @@ def cnn2d(maxlen,nb_words,embed_dim,embedding_matrix,trainable_flag,comp=True):
     model = Model(inputs=inp, outputs=x)
     if comp:
         model.compile(loss='binary_crossentropy',
-                      optimizer='adam',
+                      optimizer='nadam',
                       metrics=['accuracy'])
 
     return model
@@ -60,7 +60,7 @@ def cnn_v1(maxlen,nb_words,embed_dim,embedding_matrix,trainable_flag,comp=True):
     model = Model(inputs=inp, outputs=x)
     if comp:
         model.compile(loss='binary_crossentropy',
-                      optimizer='adam',
+                      optimizer='nadam',
                       metrics=['accuracy'])
 
     return model
@@ -84,7 +84,7 @@ def cnn_v2(maxlen,nb_words,embed_dim,embedding_matrix,trainable_flag,comp=True):
     model = Model(inputs=inp, outputs=x)
     if comp:
         model.compile(loss='binary_crossentropy',
-                      optimizer='adam',
+                      optimizer='nadam',
                       metrics=['accuracy'])
 
     return model
@@ -98,13 +98,13 @@ def cnn_gru(maxlen,nb_words,embed_dim,embedding_matrix,trainable_flag,comp=True)
     x = Dropout(0.2)(x)
     main = Conv1D(filters=256, kernel_size=3, padding='same', activation='relu')(x)
     main = MaxPooling1D(pool_size=2)(main)
-    main = GRU(64)(main)
+    main = CuDNNGRU(64)(main)
     main = Dense(32, activation="relu")(main)
     main = Dense(6, activation="sigmoid")(main)
     model = Model(inputs=inp, outputs=main)
     if comp:
         model.compile(loss='binary_crossentropy',
-                      optimizer='adam',
+                      optimizer='nadam',
                       metrics=['accuracy'])
 
     return model
@@ -124,7 +124,7 @@ def cudnn_gru(maxlen,nb_words,embed_dim,embedding_matrix,trainable_flag,comp=Tru
     model = Model(inputs=inp, outputs=x)
     if comp:
         model.compile(loss='binary_crossentropy',
-                      optimizer='adam',
+                      optimizer='nadam',
                       metrics=['accuracy'])
     return model
 
@@ -135,7 +135,7 @@ def lstm_v1(maxlen,nb_words,embed_dim,embedding_matrix,trainable_flag,comp=True)
     else:
         x = Embedding(nb_words, embed_dim, weights=[embedding_matrix],trainable=trainable_flag)(inp)
     x = Dropout(0.2)(x)
-    x = Bidirectional(LSTM(64, return_sequences=True, dropout=0.2, recurrent_dropout=0.2))(x)
+    x = Bidirectional(CuDNNLSTM(64, return_sequences=True))(x)
     x = GlobalMaxPool1D()(x)
     x = Dropout(0.1)(x)
     x = Dense(256, activation="relu")(x)
@@ -144,7 +144,7 @@ def lstm_v1(maxlen,nb_words,embed_dim,embedding_matrix,trainable_flag,comp=True)
     model = Model(inputs=inp, outputs=x)
     if comp:
         model.compile(loss='binary_crossentropy',
-                      optimizer='adam',
+                      optimizer='nadam',
                       metrics=['accuracy'])
     return model
 
@@ -155,7 +155,7 @@ def gru_v1(maxlen,nb_words,embed_dim,embedding_matrix,trainable_flag,comp=True):
     else:
         x = Embedding(nb_words, embed_dim, weights=[embedding_matrix],trainable=trainable_flag)(inp)
     x = Dropout(0.2)(x)
-    x = Bidirectional(GRU(64, return_sequences=True, dropout=0.2, recurrent_dropout=0.2))(x)
+    x = Bidirectional(CuDNNGRU(64, return_sequences=True))(x)
     x = GlobalMaxPool1D()(x)
     x = Dropout(0.1)(x)
     x = Dense(256, activation="relu")(x)
@@ -164,7 +164,7 @@ def gru_v1(maxlen,nb_words,embed_dim,embedding_matrix,trainable_flag,comp=True):
     model = Model(inputs=inp, outputs=x)
     if comp:
         model.compile(loss='binary_crossentropy',
-                      optimizer='adam',
+                      optimizer='nadam',
                       metrics=['accuracy'])
     return model
 
