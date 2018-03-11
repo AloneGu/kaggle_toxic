@@ -1,10 +1,10 @@
-
 # coding: utf-8
 
 # In[1]:
 
 
 # ref: https://www.kaggle.com/tilii7/tuned-logreg-oof-files
+# https://www.kaggle.com/peterhurford/lightgbm-with-select-k-best-on-tfidf/code
 
 import numpy as np
 import pandas as pd
@@ -89,12 +89,12 @@ repl = {
     "cannot": "can not",
     "i'm": "i am",
     "m": "am",
-    "i'll" : "i will",
-    "its" : "it is",
-    "it's" : "it is",
-    "'s" : " is",
-    "that's" : "that is",
-    "weren't" : "were not",
+    "i'll": "i will",
+    "its": "it is",
+    "it's": "it is",
+    "'s": " is",
+    "that's": "that is",
+    "weren't": "were not",
 }
 
 keys = [i for i in repl.keys()]
@@ -146,18 +146,15 @@ train_text = train['comment_text']
 test_text = test['comment_text']
 all_text = pd.concat([train_text, test_text])
 
-
 # In[2]:
 
 
 train.head()
 
-
 # In[3]:
 
 
 test.head()
-
 
 # In[4]:
 
@@ -189,7 +186,7 @@ test_char_features = char_vectorizer.transform(test_text)
 
 train_features = hstack([train_char_features, train_word_features]).tocsr()
 test_features = hstack([test_char_features, test_word_features]).tocsr()
-print(train_features.shape,test_features.shape)
+print(train_features.shape, test_features.shape)
 
 del all_text
 del word_vectorizer
@@ -199,15 +196,14 @@ del train_char_features
 del test_word_features
 del test_char_features
 import gc
-gc.collect()
 
+gc.collect()
 
 # In[5]:
 
 
 target = target.values
 print(target[:5])
-
 
 # In[ ]:
 
@@ -225,60 +221,60 @@ sfm = SelectFromModel(model, threshold=0.2)
 
 def kf_train(k=5):
     skf = StratifiedKFold(n_splits=k, shuffle=True, random_state=1001)
-    train_pred, test_pred = np.zeros((159571,6)),np.zeros((153164,6))
+    train_pred, test_pred = np.zeros((159571, 6)), np.zeros((153164, 6))
     for j in range(6):
-        train_x = sfm.fit_transform(train_features, target[:,j])
+        train_x = sfm.fit_transform(train_features, target[:, j])
         print(train_x.shape)
         test_x = sfm.transform(test_features)
         fold_idx = 0
-        for train_index, test_index in skf.split(train_x,target[:,j]):
-            
+        for train_index, test_index in skf.split(train_x, target[:, j]):
             # data
-            curr_x,curr_y = train_x[train_index],target[train_index][:,j]
-            hold_out_x,hold_out_y = train_x[test_index],target[test_index][:,j]
+            curr_x, curr_y = train_x[train_index], target[train_index][:, j]
+            hold_out_x, hold_out_y = train_x[test_index], target[test_index][:, j]
             d_train = lgb.Dataset(curr_x, label=curr_y)
             d_valid = lgb.Dataset(hold_out_x, label=hold_out_y)
             watchlist = [d_train, d_valid]
-            
+
             params = {'learning_rate': 0.2,
-              'application': 'binary',
-              'num_leaves': 16,
-              'metric': 'auc',
-              'data_random_seed': 2,
-              'feature_fraction': 0.6,
-              'nthread': 4,
-              'lambda_l1': 1,
-              'lambda_l2': 1}
-            
+                      'application': 'binary',
+                      'num_leaves': 16,
+                      'metric': 'auc',
+                      'data_random_seed': 2,
+                      'feature_fraction': 0.6,
+                      'nthread': 4,
+                      'lambda_l1': 1,
+                      'lambda_l2': 1}
+
             # train
             lgb_m = lgb.train(params,
-                      train_set=d_train,
-                      num_boost_round=200,
-                      valid_sets=watchlist,
-                      early_stopping_rounds=20,
-                      verbose_eval=50)
-            
+                              train_set=d_train,
+                              num_boost_round=200,
+                              valid_sets=watchlist,
+                              early_stopping_rounds=20,
+                              verbose_eval=50)
+
             hold_out_pred = lgb_m.predict(hold_out_x)
             curr_train_pred = lgb_m.predict(curr_x)
-            print(fold_idx,log_loss(hold_out_y,hold_out_pred),log_loss(curr_y,curr_train_pred))
-            print(roc_auc_score(hold_out_y,hold_out_pred),roc_auc_score(curr_y,curr_train_pred))
+            # floating point exception (core dumped)
+            # print(fold_idx,log_loss(hold_out_y,hold_out_pred),log_loss(curr_y,curr_train_pred))
+            # print(roc_auc_score(hold_out_y,hold_out_pred),roc_auc_score(curr_y,curr_train_pred))
             fold_idx += 1
-            
-            train_pred[test_index,j] = list(hold_out_pred.flatten())
+
+            train_pred[test_index, j] = list(hold_out_pred.flatten())
             y_test = lgb_m.predict(test_x)
-            test_pred[:,j] += y_test
-        print('=========',class_names[j])
-    test_pred = test_pred/k
+            test_pred[:, j] += y_test
+        print('=========', class_names[j])
+    test_pred = test_pred / k
     return train_pred, test_pred
 
-train_pred,test_pred = kf_train(5)
 
+train_pred, test_pred = kf_train(5)
 
 # In[ ]:
 
 
 import pickle
-with open('../features/lgb1_feat.pkl','wb') as fout:
-    pickle.dump([train_pred,test_pred],fout)
-print(test_pred[:5])
 
+with open('../features/lgb1_feat.pkl', 'wb') as fout:
+    pickle.dump([train_pred, test_pred], fout)
+print(test_pred[:5])
