@@ -16,4 +16,4 @@ get crawl fasttext word embeding from https://www.kaggle.com/yekenot/pooled-gru-
 
 * combine with other features, use xgb or lgb to ensemble (10 fold, pub score 9871, pri score 9868)
 
-* blend with other results (pub score 9873, pri score 9869, final rank 120/4625, top 3%)
+* blend with other results (pub score 9873, pri score 9869, final rank 120/4625, top 3%， toxic小分队)
